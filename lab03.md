@@ -10,10 +10,7 @@ IT技术学习平台：乐知教育、代码托管+社交编程平台：code、�
 务聚合平台：mobilehub、IT专属求职网站：job、中文软件外包和项目交易平
 台：csto、程序员深度交流社区：iteye、中国最大技术管理者平台：CTO俱乐
 部、云计算产业人士沙龙：云计算俱乐部、面向移动开发者的技术组织：移动开发
-者俱乐部、面向全国大学生的技术组织：高校俱乐部。![在这里插入图片描述]
-    (https://img-blog.csdn.net/20181015000915164?
-    watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0JhYm9vbjUxMw==/font
-    /5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+者俱乐部、面向全国大学生的技术组织：高校俱乐部。https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=88dd2dcee9dde711e7d244f09fd4a926/dbb44aed2e738bd4eea32ffaad8b87d6267ff97f.jpg
     在这里无论你是小白，亦或是大佬，总能找到适合自己的知识，我想如果你真正想
 成为一名和编程有关的人员，那么CSDN无疑是你很好的选择。
     在这里你不仅能学到专业知识，也可以这过来人交流经验，学习过来人的做法，规
