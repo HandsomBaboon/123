@@ -1,6 +1,6 @@
 示意GIF如下（由于照片格式问题直接贴链接了）：
 https://img-blog.csdnimg.cn/20190103195334806.gif
-#include <stdio.h>
+```#include <stdio.h>
 #include <windows.h>
 #include <stdlib.h>
 #include <math.h>
@@ -221,5 +221,9 @@ int main() {
     ini();
     show();
     return 0;
-}
+}```
+
+
+
+
 
