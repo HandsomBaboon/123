@@ -1,236 +1,224 @@
+#include <stdio.h>
+#include <windows.h>
+#include <stdlib.h>
+#include <math.h>
+//#include <unistd.h>
+#include <conio.h>
+#include <string.h>
+#include <time.h>
+void food();
+void show();
+void move();
+void turn();
+void check();
+void ini();
+//void calculate();
+//int movable[4] = { 0, 1, 1, 0 };  //数组的下标表示方向，0123分别表示上下左右，下同
+//int distance[4] = { 9999, 9999, 9999, 9999 };
+int  dy[4] = { 0, 1, 0, -1 };
+int  dx[4] = { -1, 0, 1, 0 };
+int sum = 5;  //蛇总长度
+int over = 0;
+int speed;   
+//int foodx, foody;  //食物的坐标
+char map[17][17];
+
+struct snake {
+    int x, y;  //身体坐标 
+    int dir;  //方向（只有蛇头的方向是有用的） 
+} A[100];
+
+void ini() {  //初始化界面
+    speed = 500;
+    over = 0;
+    sum = 5;
+    //movable[0] = 0; movable[1] = 1; movable[2] = 1; movable[3] = 0;
+    //distance[0] = 9999; distance[1] = 9999; distance[2] = 9999; distance[3] = 9999;
+    int i, j;
+    for (i = 0; i < 100; i++) {  //初始化蛇头和蛇身的数据
+        A[i].dir = 0;
+        A[i].x = 0;
+        A[i].y = 0;
+    }
+    A[0].x = 1; A[0].y = 1;  //地图左上角设置一条长度为5的蛇
+    A[1].x = 1; A[1].y = 2;
+    A[2].x = 1; A[2].y = 3;
+    A[3].x = 1; A[3].y = 4;
+    A[4].x = 1; A[4].y = 5; A[4].dir = 1;
+    srand(time(0));
+    for (i = 0; i < 17; i++) {  //设置地图
+        for (j = 0; j < 17; j++) {
+            map[i][j] = '*';
+        }
+    }
+    for (i = 1; i < 16; i++) {
+        for (j = 1; j < 16; j++) {
+            map[i][j] = ' ';
+        }
+    }
+    //map[6][5] = '*'; map[6][6] = '*'; map[6][7] = '*';
+    //map[7][5] = '*'; map[7][7] = '*';
+    map[A[4].x][A[4].y] = 'H';  //设置蛇头
+    for (i = 0; i < sum - 1; i++) {  //设置蛇身
+        map[A[i].x][A[i].y] = 'X';
+    }
+    food();
+    //calculate();
+}
 
 
-    #include <stdio.h>
-    #include <windows.h>
-    #include<conio.h>
-    #include <stdlib.h>
-    #include<time.h>
-     
-    #define X 23
-    #define Y 75
-     
-    #define UP 0
-    #define DOWN 1
-    #define LEFT 2
-    #define RIGHT 3
-     
-    #define WAIT_TIME 200//待蛇刷新的时间,可以说是速度，修改可变速
-     
-    int map_0[X][Y];
-    int Snake[X*Y][2]; 
-    int Slength;
-    int direction; 
-    int score=0;
-     
-    bool pdEatFood=false;
-     
-    void csh();
-    void huaMap();
-    void huaSnake();
-    void gotoxy(int x,int y);
-    void move();
-    void intokey();
-    int check(int x,int y);
-    void putfood();
-    bool gameover();
-    void dy_fs();
-     
-    int main()
-    {
-    	csh();
-    	huaMap();
-    	putfood();
-    	while(1)
-        {
-            huaSnake();               
-            Sleep(WAIT_TIME);  
-            intokey();
-            move();
-            dy_fs();
-    		if(gameover())
-            {
-                system("cls");          //清除屏幕内容
-                printf("Game Over\n");  
-                system("pause");
-                getchar();
-                break;
-            }
-    		if(map_0[Snake[0][0]][Snake[0][1]]==-1)
-    		{
-    		map_0[Snake[0][0]][Snake[0][1]]=0;
-    		pdEatFood=true;
-    		putfood();
-    		score+=10;
-    		}
+void show() {  //显示界面 
+    int i, j, x, y;
+    for (i = 0; i < 17; i++) {  //显示界面
+        for (j = 0; j < 17; j++) {
+            printf("%c", map[i][j]);
         }
-    	return 0;
+        printf("\n");
     }
-    void csh()//初始化
-    {
-    	srand((unsigned)time(NULL)); //设置种子为现在的时间
-    	Slength=4;
-    	gotoxy(0,0);
-    	CONSOLE_CURSOR_INFO cursor_info = {1, 0}; //清除光标
-    	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);		
-    	int x,y;
-    	Snake[0][0]=X/2;
-    	Snake[0][1]=Y/2;
-    	for(x=0;x<X;x++){
-    		map_0[x][0]=1;
-    		map_0[x][Y-1]=1;
-    	}
-    	for(y=1;y<Y-1;y++){
-    		map_0[0][y]=1;
-    		map_0[X-1][y]=1;
-    	} 
-    	for(x=1;x<4;x++){	// 初始化蛇的坐标
-    		Snake[x][0]=Snake[0][0]+x;
-    		Snake[x][1]=Snake[0][1];
-    	}
-    	direction=UP;
-    	
-    }
-    void huaMap()// 画地图
-    {
-    	int x,y;
-    	for(x=0;x<X;x++){
-    		for(y=0;y<Y;y++){
-    			if(map_0[x][y]==1){
-    				printf("#");
-    			}
-    			if(map_0[x][y]==0){
-    				printf(" ");
-    			}
-    		}
-    		printf("\n");
-    	}
-    }
-    void huaSnake()// 画蛇
-    {
-    	int x;
-    	for(x=0;x<Slength;x++)
-    	{
-    		gotoxy(Snake[x][0],Snake[x][1]);
-    		printf("@");	
-    	}
-    }
-    void gotoxy(int i,int j)// 移动光标
-    {
-        COORD position={j,i};
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),position);
-    }
-    void move()
-    {
-        int i;
-        gotoxy(Snake[Slength-1][0],Snake[Slength-1][1]);//擦除尾巴
-        printf(" ");                            
-        for(i=Slength-1;i>0;i--)    //从尾巴开始，每一个点的位置等于它前面一个点的位置
-        {
-            Snake[i][0]=Snake[i-1][0];
-            Snake[i][1]=Snake[i-1][1];
-        }
-        switch(direction)
-        {
-        case UP:
-            Snake[0][0]--;
-            break;
-        case DOWN:
-            Snake[0][0]++;
-            break;
-        case LEFT:
-            Snake[0][1]--;
-            break;
-        case RIGHT:
-            Snake[0][1]++;
-            break;
-        }
-    	if(pdEatFood){
-    	Slength++;
-    	pdEatFood=false;
-    	}
-     
-    }
-    void intokey()
-    {
-        if(kbhit()!=0)          //kbhit()函数 检查当前是否有键盘输入，若有则返回一个非0值，否则返回0
-        {
-            char in;
-            while(!kbhit()==0)  //如果玩家输入了多个按键，以最后一个按键为准
-                in=getch();
-            switch(in)
-            {
-            case 'w':
-            case 'W':
-                if(direction!=DOWN)         //防止缩头
-                    direction=UP;
-                break;
-            case 's':
-            case 'S':
-                if(direction!=UP)
-                    direction=DOWN;
-                break;
-            case 'a':
-            case 'A':
-                if(direction!=RIGHT)
-                    direction=LEFT;
-                break;
-            case 'd':
-            case 'D':
-                if(direction!=LEFT)
-                    direction=RIGHT;
-                break;
-    		case 'p':
-            case 'P':
-                gotoxy(X,0);        
-                system("pause");
-                gotoxy(X,0);
-                printf("                   ");  //	消去下面的按任意键继续
-                break;
+    while (1) {
+        Sleep(speed);  //界面刷新速度
+        turn();
+        move();
+        if (over) {  //设置蛇死掉后可以进行的操作 
+            while (1) {
+                char ch = _getch();
+                if (ch == 113) {  //输入‘q’结束 
+                    return;
+                }
+                else if (ch == 114) {  //输入‘r’重新开始 
+                    ini();
+                    break;
+                }
             }
         }
+        system("cls");  //清屏 
+        for (i = 0; i < 17; i++) {  //重新显示界面
+            for (j = 0; j < 17; j++) {
+                printf("%c", map[i][j]);
+            }
+            printf("\n");
+        }
+        //calculate(); //计算并记录蛇头与食物距离
     }
-    int check(int ii,int jj){// 检查是否能投放食物
-    	if(map_0[ii][jj]==1) 
-    		return 0;
-    	if(ii==0 || jj==0 || ii==X-1 || jj==Y-1)
-    		return 0;
-    	int i;
-    	for(i=0;i<Slength;i++){
-    	if(ii==Snake[i][0] && jj==Snake[i][1])
-    	return 0;
-    	}
-    	return 1;
-    }
-    void putfood()
-    {
-    	int i,j;
-    	do{
-    	i=rand()%X;
-    	j=rand()%Y;
-    	}while(check(i,j)==0);
-    	map_0[i][j]=-1;
-    	gotoxy(i,j);
-    	printf("$");
-    }
-    bool gameover()
-    {
-    	bool isgameover=false;
-    	int sX,sY;
-    	sX=Snake[0][0],sY=Snake[0][1];
-    	if(sX==0 || sX==X-1 || sY==0 || sY==Y-1)
-    		isgameover=true;
-    	int i;
-    	for(i=1;i<Slength;i++){
-    	if(sX==Snake[i][0] && sY==Snake[i][1])
-    		isgameover=true;
-    	}
-    	return isgameover;
-    }
-    void dy_fs()
-    {
-    	gotoxy(X,0);
-    	gotoxy(X+1,0);
-        printf("最终得分: %d",score);
-    }
+}
 
+void food() {  //生成食物
+    int x, y;
+    while (1) {
+        x = (int)(15 * rand() / (RAND_MAX + 1.0));  //随机产生一组食物坐标
+        y = (int)(15 * rand() / (RAND_MAX + 1.0));
+        if (map[x][y] == ' ') {  //如果是空格则在该处生成食物
+            map[x][y] = 'O';
+            //foodx = x;  //记录食物坐标 
+            //foody = y;
+            break;
+        }
+    }
+}
+
+
+void move() {  //蛇移动
+    int i, x, y;
+    int t = sum;  //t记录当前蛇总长度 
+    check();  //移动前检查按当前方向移动一步后的情况
+    if (t == sum) {  //没有吃到苹果
+        for (i = 0; i < sum - 1; i++) {
+            if (i == 0) {  //蛇尾坐标处变成空格，把蛇尾坐标变成前一个蛇身的坐标 
+                map[A[i].x][A[i].y] = ' ';
+                A[i].x = A[i + 1].x;
+                A[i].y = A[i + 1].y;
+            }
+            else {  //每个蛇身坐标都变为它前一个蛇身的坐标
+                A[i].x = A[i + 1].x;
+                A[i].y = A[i + 1].y;
+            }
+            map[A[i].x][A[i].y] = 'X';  //把地图上蛇身坐标处的字符设置成‘X’
+        }
+        A[sum - 1].x = A[sum - 1].x + dx[A[sum - 1].dir];  //蛇头按当前方向移动一格 
+        A[sum - 1].y = A[sum - 1].y + dy[A[sum - 1].dir];
+        map[A[sum - 1].x][A[sum - 1].y] = 'H';  //把地图上蛇头坐标处的字符设置成‘H’
+    }
+    else {  //吃到苹果（sum会加1）
+        map[A[sum - 2].x][A[sum - 2].y] = 'X';  //把地图上原蛇头坐标处的字符设置成‘X’
+        A[sum - 1].x = A[sum - 2].x + dx[A[sum - 2].dir];  //新蛇头的坐标是原蛇头沿当前方向移动一格后的坐标 
+        A[sum - 1].y = A[sum - 2].y + dy[A[sum - 2].dir];
+        A[sum - 1].dir = A[sum - 2].dir;  //新蛇头方向为原蛇头的方向
+        map[A[sum - 1].x][A[sum - 1].y] = 'H';  //把地图上蛇头坐标处的字符设置成‘H’
+        food();
+    }
+    /*for(i = 0; i < 4; i++) {  //记录下能走的方向
+        x = A[sum - 1].x + dx[i];
+        y = A[sum - 1].y + dy[i];
+        if(map[x][y] == ' ' || map[x][y] == 'O') {
+            movable[i] = 1;  //能走就把对应方向的值设置为1 
+        } else {
+            if(x != A[0].x || y != A[0].y) {
+                movable[i] = 0;  //不能走就把对应方向的值设置为0 
+            } else {
+                movable[i] = 1;
+            }
+        }
+    }*/
+}
+
+void check() {  //检查是否死亡或者吃到食物
+    int x, y, i, j;
+    x = A[sum - 1].x + dx[A[sum - 1].dir];  //记录按当前方向移动一格后蛇头的坐标 
+    y = A[sum - 1].y + dy[A[sum - 1].dir];
+    if (map[x][y] == '*' || map[x][y] == 'X') {  //如果地图上该坐标处字符为‘*’或‘X’就死亡 
+        if (x != A[0].x || y != A[0].y) {  //蛇尾除外 
+            map[8][4] = 'G'; map[8][5] = 'A'; map[8][6] = 'M'; map[8][7] = 'E';  //输出“GAME OVER” 
+            map[8][9] = 'O'; map[8][10] = 'V'; map[8][11] = 'E'; map[8][12] = 'R';
+            map[8][8] = ' ';
+            system("cls");
+            for (i = 0; i < 17; i++) {
+                for (j = 0; j < 17; j++) {
+                    printf("%c", map[i][j]);
+                }
+                printf("\n");
+            }
+            printf("Input 'r' to restart\nInput 'q' to quit\n");
+            over = 1;
+        }
+    }
+    else if (map[x][y] == 'O') {  //吃到苹果 
+        sum++;  //蛇身总长加1 
+        speed = ((600 - sum * 20)>100) ? (600 - sum * 20) : 100; //速度加快 
+    }
+}
+
+void turn() {  //转弯
+    if (_kbhit()) {
+        char dir = _getch();  //读取输入的键 
+        switch (dir) {  //改变方向 
+        case 119: A[sum - 1].dir = (A[sum - 1].dir == 2)?2:0; break;
+        case 100: A[sum - 1].dir = (A[sum - 1].dir == 3)?3:1; break;
+        case 115: A[sum - 1].dir = (A[sum - 1].dir == 0)?0:2; break;
+        case 97: A[sum - 1].dir = (A[sum - 1].dir == 1)?1:3; break;
+        }
+    }
+}
+
+/*void calculate() {  //计算并记录蛇头与食物距离
+    int i = 0, x, y;
+    for(i = 0; i < 4; i++) {
+        if(movable[i] == 1) {  //如果该方向能走，则记录下沿该方向走一步后与食物的距离 
+            x = A[sum - 1].x + dx[i];
+            y = A[sum - 1].y + dy[i];
+            distance[i] = abs(foodx-x)+abs(foody-y);
+        } else {  //如果不能走则把距离设置为9999 
+            distance[i] = 9999;
+        }
+    }
+}*/
+
+int main() {
+    printf("'w''s''a''d'控制上下左右\n蛇越长跑得越快~~~\n");
+    printf("按任意键开始\n");
+    char ch = _getch();
+    system("cls");
+    ini();
+    show();
+    return 0;
+}
 
