@@ -230,4 +230,3 @@ void dy_fs()
 	gotoxy(X+1,0);
     printf("最终得分: %d",score);
 }
-
